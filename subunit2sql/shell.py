@@ -139,9 +139,8 @@ def process_results(results):
         run_at = None
     db_run = api.create_run(totals['skips'], totals['fails'],
                             totals['success'], run_time, CONF.artifacts,
-                            id=CONF.run_id, run_at=run_at, session=session)
-    if CONF.run_meta:
-        api.add_run_metadata(CONF.run_meta, db_run.id, session)
+                            id=CONF.run_id, run_at=run_at, session=session,
+                            metadata=CONF.run_meta)
     for test in results:
         db_test = api.get_test_by_test_id(test, session)
         if not db_test:
@@ -170,20 +169,7 @@ def process_results(results):
                                        results[test]['end_time'],
                                        session)
         if results[test]['metadata']:
-            if CONF.test_attr_prefix:
-                attrs = results[test]['metadata'].get('attrs')
-                test_attr_list = _get_test_attrs_list(attrs)
-                test_metadata = api.get_test_metadata(db_test.id, session)
-                test_metadata = [(meta.key, meta.value) for meta in
-                                 test_metadata]
-                if test_attr_list:
-                    for attr in test_attr_list:
-                        if ('attr', attr) not in test_metadata:
-                            test_meta_dict = {'attr': attr}
-                            api.add_test_metadata(test_meta_dict, db_test.id,
-                                                  sesion=session)
-            api.add_test_run_metadata(results[test]['metadata'], test_run.id,
-                                      session)
+            api.update_test(results[test]['metadata'], test_run.id, session)
         if results[test]['attachments']:
             api.add_test_run_attachments(results[test]['attachments'],
                                          test_run.id, session)

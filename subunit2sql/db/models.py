@@ -60,6 +60,7 @@ class Test(BASE, SubunitBase):
     success = sa.Column(sa.Integer())
     failure = sa.Column(sa.Integer())
     run_time = sa.Column(sa.Float())
+    metadata = sa.Column(sa.dialects.mysql.JSON())
 
 
 class Run(BASE, SubunitBase):
@@ -76,6 +77,7 @@ class Run(BASE, SubunitBase):
     artifacts = sa.Column(sa.Text())
     run_at = sa.Column(sa.DateTime,
                        default=datetime.datetime.utcnow)
+    metadata = sa.Column(sa.dialects.mysql.JSON())
 
 
 class TestRun(BASE, SubunitBase):
@@ -98,59 +100,13 @@ class TestRun(BASE, SubunitBase):
     start_time_microsecond = sa.Column(sa.Integer(), default=0)
     stop_time = sa.Column(sa.DateTime())
     stop_time_microsecond = sa.Column(sa.Integer(), default=0)
+    metadata = sa.Column(sa.dialects.mysql.JSON())
     test = sa.orm.relationship(Test, backref=sa.orm.backref('test_run_test'),
                                foreign_keys=test_id,
                                primaryjoin=test_id == Test.id)
     run = sa.orm.relationship(Run, backref=sa.orm.backref('test_run_run'),
                               foreign_keys=run_id,
                               primaryjoin=run_id == Run.id)
-
-
-class RunMetadata(BASE, SubunitBase):
-    __tablename__ = 'run_metadata'
-    __table_args__ = (sa.Index('ix_run_key_value', 'key', 'value'),
-                      sa.Index('ix_run_id', 'run_id'),
-                      sa.UniqueConstraint('run_id', 'key', 'value',
-                                          name='uq_run_metadata'))
-
-    id = sa.Column(sa.BigInteger, primary_key=True)
-    key = sa.Column(sa.String(255))
-    value = sa.Column(sa.String(255))
-    run_id = sa.Column(sa.BigInteger)
-    run = sa.orm.relationship(Run, backref='run', foreign_keys=run_id,
-                              primaryjoin=run_id == Run.id)
-
-
-class TestRunMetadata(BASE, SubunitBase):
-    __tablename__ = 'test_run_metadata'
-    __table_args__ = (sa.Index('ix_test_run_key_value', 'key', 'value'),
-                      sa.Index('ix_test_run_id', 'test_run_id'),
-                      sa.UniqueConstraint('test_run_id', 'key', 'value',
-                                          name='uq_test_run_metadata'))
-
-    id = sa.Column(sa.BigInteger, primary_key=True)
-    key = sa.Column(sa.String(255))
-    value = sa.Column(sa.String(255))
-    test_run_id = sa.Column(sa.BigInteger)
-    test_run = sa.orm.relationship(TestRun,
-                                   backref=sa.orm.backref('test_run_meta'),
-                                   foreign_keys=test_run_id,
-                                   primaryjoin=test_run_id == TestRun.id)
-
-
-class TestMetadata(BASE, SubunitBase):
-    __tablename__ = 'test_metadata'
-    __table_args__ = (sa.Index('ix_test_key_value', 'key', 'value'),
-                      sa.Index('ix_test_id', 'test_id'),
-                      sa.UniqueConstraint('test_id', 'key', 'value',
-                                          name='uq_test_metadata'))
-
-    id = sa.Column(sa.BigInteger, primary_key=True)
-    key = sa.Column(sa.String(255))
-    value = sa.Column(sa.String(255))
-    test_id = sa.Column(sa.BigInteger)
-    test = sa.orm.relationship(Test, backref='test', foreign_keys=test_id,
-                               primaryjoin=test_id == Test.id)
 
 
 class Attachments(BASE, SubunitBase):

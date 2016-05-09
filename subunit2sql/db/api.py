@@ -110,7 +110,7 @@ def get_engine(use_slave=False):
 
 
 def create_test(test_id, run_count=0, success=0, failure=0, run_time=0.0,
-                session=None):
+                metadata=None, session=None):
     """Create a new test record in the database.
 
     This method is used to add a new test in the database. Tests are used to
@@ -136,6 +136,7 @@ def create_test(test_id, run_count=0, success=0, failure=0, run_time=0.0,
     test.success = success
     test.failure = failure
     test.run_time = run_time
+    test.metadata = metadata
     session = session or get_session()
     with session.begin():
         session.add(test)
@@ -167,7 +168,7 @@ def update_test(values, test_id, session=None):
 
 
 def create_run(skips=0, fails=0, passes=0, run_time=0, artifacts=None,
-               id=None, session=None, run_at=None):
+               id=None, metadata=None, session=None, run_at=None):
     """Create a new run record in the database
 
     :param int skips: total number of skipped tests defaults to 0
@@ -195,6 +196,7 @@ def create_run(skips=0, fails=0, passes=0, run_time=0, artifacts=None,
     run.passes = passes
     run.run_time = run_time
     run.artifacts = artifacts
+    run.metadata = metadata
     session = session or get_session()
     with session.begin():
         session.add(run)
@@ -249,54 +251,6 @@ def update_test_run(values, test_run_id, session=None):
     return test_run
 
 
-def add_run_metadata(meta_dict, run_id, session=None):
-    """Add a metadata key value pairs for a specific run.
-
-    This method will take a dictionary and store key value pair metadata in the
-    DB associated with the specified run.
-
-    :param dict meta_dict: a dictionary which will generate a separate key
-                           value pair row associated with the run_id
-    :param str run_id: the uuid of the run to update. (value of the id column
-                       for the row to be updated)
-    :param session: optional session object if one isn't provided a new session
-                    will be acquired for the duration of this operation
-
-    :return list: The list of created metadata objects
-    :rtype: subunit2sql.models.RunMeta
-    """
-
-    session = session or get_session()
-    metadata = []
-    for key, value in meta_dict.items():
-        meta = models.RunMetadata()
-        meta.key = key
-        meta.value = value
-        meta.run_id = run_id
-        with session.begin():
-            session.add(meta)
-        metadata.append(meta)
-    return metadata
-
-
-def get_run_metadata(run_id, session=None):
-    """Return all run metadata objects associated with a given run.
-
-    :param str run_id: The uuid of the run to get all the metadata
-    :param session: optional session object if one isn't provided a new session
-                    will be acquired for the duration of this operation
-
-    :return list: The list of metadata objects
-    :rtype: subunit2sql.models.RunMetadata
-    """
-    session = session or get_session()
-    query = db_utils.model_query(models.RunMetadata, session).join(
-        models.Run,
-        models.RunMetadata.run_id == models.Run.id).filter(
-            models.Run.uuid == run_id)
-    return query.all()
-
-
 def get_runs_by_key_value(key, value, session=None):
     """Return all run objects associated with a certain key/value metadata pair
 
@@ -317,7 +271,7 @@ def get_runs_by_key_value(key, value, session=None):
 
 
 def create_test_run(test_id, run_id, status, start_time=None,
-                    end_time=None, session=None):
+                    end_time=None, metadata=None, session=None):
     """Create a new test run record in the database
 
     This method creates a new record in the database
@@ -354,39 +308,11 @@ def create_test_run(test_id, run_id, status, start_time=None,
     test_run.stop_time_microsecond = stop_time_microsecond
     test_run.start_time = start_time
     test_run.start_time_microsecond = start_time_microsecond
+    test_run.metadata = metadata
     session = session or get_session()
     with session.begin():
         session.add(test_run)
     return test_run
-
-
-def add_test_run_metadata(meta_dict, test_run_id, session=None):
-    """Add a metadata key value pairs for a specific run.
-
-    This method will take a dictionary and store key value pair metadata in the
-    DB associated with the specified run.
-
-    :param dict meta_dict: a dictionary which will generate a separate key
-                           value pair row associated with the test_run_id
-    :param str test_run_id: the uuid of the test_run to update. (value of the
-                            id column for the row to be updated)
-    :param session: optional session object if one isn't provided a new session
-                    will be acquired for the duration of this operation
-
-    :return list: The list of created metadata objects
-    :rtype: subunit2sql.models.TestRunMeta
-    """
-    metadata = []
-    for key, value in meta_dict.items():
-        meta = models.TestRunMetadata()
-        meta.key = key
-        meta.value = value
-        meta.test_run_id = test_run_id
-        session = session or get_session()
-        with session.begin():
-            session.add(meta)
-        metadata.append(meta)
-    return metadata
 
 
 def get_test_run_metadata(test_run_id, session=None):
@@ -403,35 +329,6 @@ def get_test_run_metadata(test_run_id, session=None):
     query = db_utils.model_query(models.TestRunMetadata, session).filter_by(
         test_run_id=test_run_id)
     return query.all()
-
-
-def add_test_metadata(meta_dict, test_id, session=None):
-    """Add a metadata key value pairs for a specific test.
-
-    This method will take a dictionary and store key value pair metadata in the
-    DB associated with the specified run.
-
-    :param dict meta_dict: a dictionary which will generate a separate key
-                           value pair row associated with the test_run_id
-    :param str test_id: the uuid of the test to update. (value of the
-                        id column for the row to be updated)
-    :param session: optional session object if one isn't provided a new session
-                    will be acquired for the duration of this operation
-
-    :return list: The list of created metadata objects
-    :rtype: subunit2sql.models.TestMeta
-    """
-    metadata = []
-    for key, value in meta_dict.items():
-        meta = models.TestMetadata()
-        meta.key = key
-        meta.value = value
-        meta.test_id = test_id
-        session = session or get_session()
-        with session.begin():
-            session.add(meta)
-        metadata.append(meta)
-    return metadata
 
 
 def get_test_metadata(test_id, session=None):
