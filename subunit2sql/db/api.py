@@ -136,7 +136,7 @@ def create_test(test_id, run_count=0, success=0, failure=0, run_time=0.0,
     test.success = success
     test.failure = failure
     test.run_time = run_time
-    test.metadata = metadata
+    test.my_metadata = metadata
     session = session or get_session()
     with session.begin():
         session.add(test)
@@ -196,7 +196,7 @@ def create_run(skips=0, fails=0, passes=0, run_time=0, artifacts=None,
     run.passes = passes
     run.run_time = run_time
     run.artifacts = artifacts
-    run.metadata = metadata
+    run.my_metadata = metadata
     session = session or get_session()
     with session.begin():
         session.add(run)
@@ -308,7 +308,7 @@ def create_test_run(test_id, run_id, status, start_time=None,
     test_run.stop_time_microsecond = stop_time_microsecond
     test_run.start_time = start_time
     test_run.start_time_microsecond = start_time_microsecond
-    test_run.metadata = metadata
+    test_run.my_metadata = metadata
     session = session or get_session()
     with session.begin():
         session.add(test_run)

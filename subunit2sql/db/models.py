@@ -60,7 +60,7 @@ class Test(BASE, SubunitBase):
     success = sa.Column(sa.Integer())
     failure = sa.Column(sa.Integer())
     run_time = sa.Column(sa.Float())
-    metadata = sa.Column(sa.JSON())
+    my_metadata = sa.Column(sa.JSON())
 
 
 class Run(BASE, SubunitBase):
@@ -77,7 +77,7 @@ class Run(BASE, SubunitBase):
     artifacts = sa.Column(sa.Text())
     run_at = sa.Column(sa.DateTime,
                        default=datetime.datetime.utcnow)
-    metadata = sa.Column(sa.JSON())
+    my_metadata = sa.Column(sa.JSON())
 
 
 class TestRun(BASE, SubunitBase):
@@ -100,7 +100,7 @@ class TestRun(BASE, SubunitBase):
     start_time_microsecond = sa.Column(sa.Integer(), default=0)
     stop_time = sa.Column(sa.DateTime())
     stop_time_microsecond = sa.Column(sa.Integer(), default=0)
-    metadata = sa.Column(sa.JSON())
+    my_metadata = sa.Column(sa.JSON())
     test = sa.orm.relationship(Test, backref=sa.orm.backref('test_run_test'),
                                foreign_keys=test_id,
                                primaryjoin=test_id == Test.id)
