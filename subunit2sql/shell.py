@@ -156,7 +156,7 @@ def process_results(results):
             run_time = subunit.get_duration(results[test]['start_time'],
                                             results[test]['end_time'])
             db_test = api.create_test(test, (success + fails), success,
-                                      fails, run_time,
+                                      fails, run_time, None,
                                       session)
         else:
             test_values = increment_counts(db_test, results[test])
@@ -167,7 +167,7 @@ def process_results(results):
                                        results[test]['status'],
                                        results[test]['start_time'],
                                        results[test]['end_time'],
-                                       session)
+                                       session=session)
         if results[test]['metadata']:
             api.update_test(results[test]['metadata'], test_run.id, session)
         if results[test]['attachments']:

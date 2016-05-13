@@ -226,63 +226,63 @@ def upgrade():
         with op.batch_alter_table("attachments_new") as batch_op:
             batch_op.drop_column('id')
             batch_op.alter_column('new_id', new_column_name='id',
-                                  primary_key=True,
+                                  primary_key=True, nullable=False,
                                   existing_type=new_id_type,
                                   autoincrement=True)
             batch_op.drop_column('test_run_id')
             batch_op.alter_column('new_test_run_id',
-                                  new_column_name='test_run_id',
+                                  new_column_name='test_run_id', nullable=False,
                                   existing_type=new_id_type)
         with op.batch_alter_table("test_run_metadata_new") as batch_op:
             batch_op.drop_column('id')
             batch_op.alter_column('new_id', new_column_name='id',
-                                  primary_key=True,
+                                  primary_key=True, nullable=False,
                                   existing_type=new_id_type,
                                   autoincrement=True)
             batch_op.drop_column('test_run_id')
             batch_op.alter_column('new_test_run_id',
-                                  new_column_name='test_run_id',
+                                  new_column_name='test_run_id', nullable=False,
                                   existing_type=new_id_type)
         with op.batch_alter_table("run_metadata_new") as batch_op:
             batch_op.drop_column('id')
             batch_op.alter_column('new_id', new_column_name='id',
-                                  primary_key=True,
+                                  primary_key=True, nullable=False,
                                   existing_type=new_id_type,
                                   autoincrement=True)
             batch_op.drop_column('run_id')
             batch_op.alter_column('new_run_id', new_column_name='run_id',
-                                  existing_type=new_id_type)
+                                  existing_type=new_id_type, nullable=False)
         with op.batch_alter_table("test_metadata_new") as batch_op:
             batch_op.drop_column('id')
             batch_op.alter_column('new_id', new_column_name='id',
-                                  primary_key=True,
+                                  primary_key=True, nullable=False,
                                   existing_type=new_id_type,
                                   autoincrement=True)
             batch_op.drop_column('test_id')
-            batch_op.alter_column('new_test_id', new_column_name='test_id',
+            batch_op.alter_column('new_test_id', new_column_name='test_id', nullable=False,
                                   existing_type=new_id_type)
         with op.batch_alter_table("test_runs_new") as batch_op:
             batch_op.drop_column('id')
             batch_op.alter_column('new_id', new_column_name='id',
-                                  primary_key=True,
+                                  primary_key=True, nullable=False,
                                   existing_type=new_id_type,
                                   autoincrement=True)
             batch_op.drop_column('test_id')
-            batch_op.alter_column('new_test_id', new_column_name='test_id',
+            batch_op.alter_column('new_test_id', new_column_name='test_id', nullable=False,
                                   existing_type=new_id_type)
             batch_op.drop_column('run_id')
-            batch_op.alter_column('new_run_id', new_column_name='run_id',
+            batch_op.alter_column('new_run_id', new_column_name='run_id', nullable=False,
                                   existing_type=new_id_type)
         with op.batch_alter_table("tests_new") as batch_op:
             batch_op.drop_column('id')
-            batch_op.alter_column('new_id', new_column_name='id',
+            batch_op.alter_column('new_id', new_column_name='id', nullable=False,
                                   primary_key=True,
                                   existing_type=new_id_type,
                                   autoincrement=True)
         with op.batch_alter_table("runs_new") as batch_op:
-            batch_op.alter_column('id', new_column_name='uuid',
+            batch_op.alter_column('id', new_column_name='uuid', nullable=False,
                                   existing_type=sa.VARCHAR(36))
-            batch_op.alter_column('new_id', new_column_name='id',
+            batch_op.alter_column('new_id', new_column_name='id', nullable=False,
                                   primary_key=True,
                                   existing_type=new_id_type,
                                   autoincrement=True)
