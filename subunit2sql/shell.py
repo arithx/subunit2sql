@@ -169,7 +169,7 @@ def process_results(results):
                                        results[test]['end_time'],
                                        session=session)
         if results[test]['metadata']:
-            api.update_test(results[test]['metadata'], test_run.id, session)
+            api.update_test_run(results[test]['metadata'], test_run.id, session)
         if results[test]['attachments']:
             api.add_test_run_attachments(results[test]['attachments'],
                                          test_run.id, session)
